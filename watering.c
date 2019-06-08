@@ -1,6 +1,7 @@
-#include <winsock.h>
-#include <MYSQL/mysql.h>
+#include <mysql/mysql.h>
 #include <time.h>
+#include "watering.h"
+#include <stdio.h>
 
 int checkHumidtu(){
 	return 0;
@@ -11,8 +12,8 @@ void saveWatering(int humidity){
 }
 
 void bddConnection(MYSQL * mysql){
-	mysql_ini(MYSQL *mysql);
-	mysql_options(&mysql, MYSQL_READ_DEFAULT_GROUP,"option");
+	mysql_init(mysql);
+	mysql_options(mysql, MYSQL_READ_DEFAULT_GROUP,"option");
 
 	/* Connexion à la bdd */
 	if(mysql_real_connect(mysql,
@@ -31,17 +32,17 @@ void bddConnection(MYSQL * mysql){
 }
 
 char* getDateLastSpray(MYSQL * mysql){
-	mysql_query(&mysql, "SELECT dateTime FROM spray ORDER BY id DESC LIMIT 0,1");
+	mysql_query(mysql, "SELECT dateTime FROM spray ORDER BY id DESC LIMIT 0,1");
 	MYSQL_RES *result;
 	MYSQL_ROW row;
 	char* date;
 
 	/* Insertion du jeu de résultat dans le pointeur result. */
-	result = mysql_use_result(&mysql);
+	result = mysql_use_result(mysql);
 
 	while(row = mysql_fetch_row(result))
 	{
-		date = row(0);	
+		date = row[0];	
 	}
 	mysql_free_result(result);
 	return date;
@@ -50,17 +51,17 @@ char* getDateLastSpray(MYSQL * mysql){
 int getDayBetweenWatering(MYSQL * mysql)
 {
 	time_t t = time(NULL);
-	mysql_query(&mysql, "SELECT dayNumber FROM needwatering WHERE needwatering.seasonId = 1 AND needwatering.temperatureRangeId=1");
+	mysql_query(mysql, "SELECT dayNumber FROM needwatering WHERE needwatering.seasonId = 1 AND needwatering.temperatureRangeId=1");
 	MYSQL_RES *result;
 	MYSQL_ROW row;
 	int dayBetweenWatering;
 	
 	/* Insertion du jeu de résultat dans le pointeur result. */
-	result = mysql_use_result(&mysql);
+	result = mysql_use_result(mysql);
 
 	while(row = mysql_fetch_row(result))
 	{
-		date = atoi(row(0));	
+		dayBetweenWatering = atoi(row[0]);	
 	}
 	mysql_free_result(result);
 	return dayBetweenWatering;
@@ -73,7 +74,7 @@ State analyzeWatering(){
 	bddConnection(&mysql);
 	
 	/* Récupération du dernier arrosage */
-	char* lastDateSpray= getLastSpray(&mysql);
+	char* lastDateSpray= getDateLastSpray(&mysql);
 	
 
 	/* Récupération du besoin d'arrosage */
@@ -82,7 +83,7 @@ State analyzeWatering(){
 	mysql_close(&mysql);
 
 	/** Comparaison du dernier arrosage au besoin de la plante **/
-	//Conversion date time en t
+	//Conversion date time en
 	int needWatering = 0;
 
 	struct State state;

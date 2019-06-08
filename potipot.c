@@ -85,6 +85,7 @@ int main(int argc,char *argv[]){
 	SOCKADDR_IN sin;
 	SOCKET sock;
 	socklen_t recsize = sizeof(sin);
+	char * buffer[300];
 
 	/* Socket et contexte d'adressage du client */
 	SOCKADDR_IN csin;
@@ -97,6 +98,9 @@ int main(int argc,char *argv[]){
 
 	/* Envoi d'une première analyse à l'aide des dernières données enregistrées. */
 	sendNewState(&csock);
+
+	while(recv(sock, buffer, 300, 0) != SOCKET_ERROR)
+		printf("Reçu : %s\n", buffer);
 
 	closeSockets(&sock,&csock);
 	return EXIT_SUCCESS;
