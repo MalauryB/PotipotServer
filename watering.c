@@ -1,6 +1,5 @@
 #include <mysql/mysql.h>
 #include <time.h>
-#include "watering.h"
 #include <stdio.h>
 
 int checkHumidty(){
@@ -8,8 +7,8 @@ int checkHumidty(){
 }
 
 void saveWatering(MYSQL * mysql, int humidity){
-	mysql_query(mysql,"INSERT INTO spray (degree, humidity) values (20, %d)",humidity);
-	mysql_query(mysql);
+	mysql_query(mysql,"INSERT INTO spray (degree, humidity) values (20, 500)");
+	mysql_affected_rows(mysql);
 	return;
 }
 
@@ -68,7 +67,7 @@ int getDayBetweenWatering(MYSQL * mysql)
 	return dayBetweenWatering;
 }
 
-State analyzeWatering(){
+int analyzeWatering(){
 	
 	/* Variable BDD et option */
 	MYSQL mysql;
@@ -94,14 +93,10 @@ State analyzeWatering(){
 	double seconds = difftime(time1, time2);
 	int needWatering = seconds/60/60/24;
 
-	struct State state;
 	if(needWatering<dayBetweenWatering){
-		state.code = 200;
-		state.message = "est arrosée";
+		return 701;
 	}
 	else{
-		state.code = 500;
-		state.message = "n'est pas arrosée";
+		return 702;
 	}
-	return state;
 }
