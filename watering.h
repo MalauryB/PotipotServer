@@ -10,7 +10,7 @@ int checkHumidity();
 
 
 /**Enregistre un nouvel arrosage dans la base de données.**/
-void saveWatering(int);
+void saveWatering(MYSQL*,int);
 
 /**Recherche le dernier arrosage et le compare à la current date et aux besoins de la plante pour savoir si la plante manque ou non d'eau. **/
 State analyzeWatering();

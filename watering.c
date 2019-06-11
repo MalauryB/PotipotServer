@@ -3,11 +3,13 @@
 #include "watering.h"
 #include <stdio.h>
 
-int checkHumidtu(){
+int checkHumidty(){
 	return 0;
 }
 
-void saveWatering(int humidity){
+void saveWatering(MYSQL * mysql, int humidity){
+	mysql_query(mysql,"INSERT INTO spray (degree, humidity) values (20, %d)",humidity);
+	mysql_query(mysql);
 	return;
 }
 
@@ -50,7 +52,6 @@ char* getDateLastSpray(MYSQL * mysql){
 
 int getDayBetweenWatering(MYSQL * mysql)
 {
-	time_t t = time(NULL);
 	mysql_query(mysql, "SELECT dayNumber FROM needwatering WHERE needwatering.seasonId = 1 AND needwatering.temperatureRangeId=1");
 	MYSQL_RES *result;
 	MYSQL_ROW row;
@@ -84,10 +85,17 @@ State analyzeWatering(){
 
 	/** Comparaison du dernier arrosage au besoin de la plante **/
 	//Conversion date time en
-	int needWatering = 0;
+	struct tm * t;
+	t->tm_mon = lastDateSpray[5] + lastDateSpray[6];
+	t->tm_mday = lastDateSpray[8] + lastDateSpray[9];
+	t->tm_year = lastDateSpray[0] + lastDateSpray[1] + lastDateSpray[2] + lastDateSpray[3];
+	time_t time1 = mktime(t);
+	time_t time2 = time(NULL);
+	double seconds = difftime(time1, time2);
+	int needWatering = seconds/60/60/24;
 
 	struct State state;
-	if(needWatering==0){
+	if(needWatering<dayBetweenWatering){
 		state.code = 200;
 		state.message = "est arrosée";
 	}
