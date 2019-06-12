@@ -30,7 +30,7 @@ void sendNewState(SOCKET csock){
 	if(sock_err != SOCKET_ERROR)
 		printf("State envoyé : %s\n", buffer);
 	else
-		printf("Erreur de transmission \n");
+		printf("ERROR - Erreur de transmission \n");
 	return;
 }
 
